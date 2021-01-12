@@ -1,0 +1,66 @@
+openapi: '3.0.0'
+info:
+  description: 'Demo search with micro services'
+  version: 3.0.0
+  title: Person with pets
+servers:
+  - url: http://localhost:8080/
+paths:
+  /api/1.0:
+    post:
+      summary: "Creates a new person"
+      tags:
+        - Person
+      operationId: createNewPerson
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+      responses:
+        '201':
+          description: 'OK: creation was successful.'
+        '500':
+          description: 'An internal Server error occurs'
+
+components:
+  schemas:
+    Person:
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: "Unique identifier of the user record"
+        firstName:
+          type: string
+          description: "First name of the user"
+        lastName:
+          type: string
+          description: "Last name of the user"
+        email:
+          type: string
+          format: email
+          description: "Email that identifies the user"
+        pets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Pet'
+        created:
+          type: string
+          format: date-time
+          description: "Timestamp created"
+        lastUpdate:
+          type: string
+          format: date-time
+          description: "Timestamp last updated"
+    Pet:
+      properties:
+        name:
+          type: string
+          description: "pet name"
+        specie:
+          type: string
+          description: "specie of the pet"
+        age:
+          type: integer
+          description: "Age in years"

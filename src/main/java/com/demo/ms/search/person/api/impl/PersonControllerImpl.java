@@ -1,7 +1,8 @@
 package com.demo.ms.search.person.api.impl;
 
-import com.demo.ms.search.person.entities.PersonEntity;
-import com.demo.ms.search.person.model.Person;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.demo.ms.search.person.api.PersonController;
+import com.demo.ms.search.person.entities.PersonEntity;
+import com.demo.ms.search.person.model.Person;
 import com.demo.ms.search.person.repository.PersonRepository;
 
 @RestController
@@ -17,7 +20,7 @@ public class PersonControllerImpl implements PersonController {
 
     private final PersonRepository personRepository;
 
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     public PersonControllerImpl(
             @Autowired final PersonRepository personRepository,
@@ -43,5 +46,43 @@ public class PersonControllerImpl implements PersonController {
         personEntity.setCreated(null);
         personEntity.setLastUpdate(null);
         return personEntity;
+    }
+
+    @Override
+    public ResponseEntity<Person> searchPersonsById(final long personId) {
+        final Optional<PersonEntity> optionalPersonEntity = personRepository.findById(personId);
+        return optionalPersonEntity
+                .map(personEntity -> modelMapper.map(personEntity, Person.class))
+                .map(person -> ResponseEntity.status(HttpStatus.OK).body(person))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+    }
+
+    @Override
+    public ResponseEntity<List<Person>> searchPersonsByFirstName(final String name) {
+        final List<PersonEntity> personsEntitySameName = personRepository.findByFirstname(name);
+
+        return transformAndReturn(personsEntitySameName);
+    }
+
+    @Override
+    public ResponseEntity<List<Person>> searchPersonsByFirstNameOrLastName(final String firstName, final String lastName) {
+        final List<PersonEntity> personsEntity = personRepository.findByFirstnameOrLastname(firstName, lastName);
+
+        return transformAndReturn(personsEntity);
+    }
+
+    private ResponseEntity<List<Person>> transformAndReturn(final List<PersonEntity> personEntities) {
+        if (personEntities.isEmpty()) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(null);
+        } else {
+            final List<Person> persons = personEntities.stream()
+                    .map(personEntity -> modelMapper.map(personEntity, Person.class))
+                    .collect(Collectors.toList());
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(persons);
+        }
     }
 }

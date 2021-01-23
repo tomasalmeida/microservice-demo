@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,8 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.demo.ms.search.person.api.PersonController;
 import com.demo.ms.search.person.entities.PersonEntity;
 import com.demo.ms.search.person.model.Person;
+import com.demo.ms.search.person.repository.specification.PersonAnnotatedSpecification;
 import com.demo.ms.search.person.repository.PersonRepository;
-import com.demo.ms.search.person.repository.PersonSpecification;
+import com.demo.ms.search.person.repository.specification.PersonSpecification;
 
 @RestController
 public class PersonControllerImpl implements PersonController {
@@ -82,6 +82,13 @@ public class PersonControllerImpl implements PersonController {
 
         final Specification<PersonEntity> spec = Specification.where(specFirstName).and(specLastName).and(specEmail);
         final List<PersonEntity> personsEntity = personRepository.findAll(spec);
+
+        return transformAndReturn(personsEntity);
+    }
+
+    @Override
+    public ResponseEntity<List<Person>> searchByPersonDataAnnotated(final PersonAnnotatedSpecification personEntitySpecification) {
+        final List<PersonEntity> personsEntity = personRepository.findAll(personEntitySpecification);
 
         return transformAndReturn(personsEntity);
     }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.demo.ms.search.person.model.Person;
+import com.demo.ms.search.person.repository.specification.PersonAnnotatedSpecification;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -83,4 +84,14 @@ public interface PersonController {
             @RequestParam(value = "firstName", required = false, defaultValue = "") final String firstName,
             @RequestParam(value = "lastName", required = false, defaultValue = "") final String lastName,
             @RequestParam(value = "email", required = false, defaultValue = "") final String email);
+
+    @Operation(summary = "Search a person by name, last name or e-mail", tags = { "Person" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Person found."),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "404", description = "Person not found")
+    })
+    @ResponseStatus(value = HttpStatus.OK)
+    @GetMapping(value = "/searchByPersonDataAnnotated", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<List<Person>> searchByPersonDataAnnotated(PersonAnnotatedSpecification personEntitySpecification);
 }

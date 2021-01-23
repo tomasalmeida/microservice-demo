@@ -1,4 +1,4 @@
-package com.demo.ms.search.person.repository;
+package com.demo.ms.search.person.repository.specification;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;

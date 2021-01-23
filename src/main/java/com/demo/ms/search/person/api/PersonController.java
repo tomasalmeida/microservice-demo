@@ -55,7 +55,7 @@ public interface PersonController {
             @ApiResponse(responseCode = "404", description = "Person not found")
     })
     @ResponseStatus(value = HttpStatus.OK)
-    @GetMapping(value = "/searchByFirstName", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/searchPersonsByFirstName", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<List<Person>> searchPersonsByFirstName(
             @RequestParam(value = "name") final String name);
 
@@ -66,9 +66,21 @@ public interface PersonController {
             @ApiResponse(responseCode = "404", description = "Person not found")
     })
     @ResponseStatus(value = HttpStatus.OK)
-    @GetMapping(value = "/searchByFirstNameOrLastName", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/searchPersonsByFirstNameOrLastName", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<List<Person>> searchPersonsByFirstNameOrLastName(
             @RequestParam(value = "firstName", required = false) final String firstName,
             @RequestParam(value = "lastName", required = false) final String lastName);
 
+    @Operation(summary = "Search a person by name, last name or e-mail", tags = { "Person" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Person found."),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "404", description = "Person not found")
+    })
+    @ResponseStatus(value = HttpStatus.OK)
+    @GetMapping(value = "/searchByPersonData", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<List<Person>> searchByPersonData(
+            @RequestParam(value = "firstName", required = false, defaultValue = "") final String firstName,
+            @RequestParam(value = "lastName", required = false, defaultValue = "") final String lastName,
+            @RequestParam(value = "email", required = false, defaultValue = "") final String email);
 }

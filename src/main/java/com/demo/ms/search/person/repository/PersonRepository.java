@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
 import org.springframework.data.querydsl.binding.QuerydslBindings;
@@ -29,5 +30,8 @@ public interface PersonRepository extends
     List<PersonEntity> findByFirstname(String name);
 
     List<PersonEntity> findByFirstnameOrLastname(String firstName, String lastName);
+
+    @Query(nativeQuery = true, value = "SELECT * FROM person_data WHERE person_data.id IN (SELECT p.id FROM person_data p,  JSONB_ARRAY_ELEMENTS(p.pets) pet WHERE UPPER(pet->>'name') LIKE UPPER(?1))")
+    List<PersonEntity> findByPetName(String name);
 
 }

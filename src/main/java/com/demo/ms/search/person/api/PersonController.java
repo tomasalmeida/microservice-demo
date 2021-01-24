@@ -111,4 +111,15 @@ public interface PersonController {
     ResponseEntity<List<Person>> findAllByWebQuerydsl(
             @QuerydslPredicate(root = PersonEntity.class) final Predicate predicate,
             @PageableDefault(size = 2, sort = "id") final Pageable pageable);
+
+    @Operation(summary = "Search a person", tags = { "Person" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Person found."),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "404", description = "Person not found")
+    })
+    @ResponseStatus(value = HttpStatus.OK)
+    @GetMapping(value = "/findByPetName", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<List<Person>> findByPetName(
+            @RequestParam(value = "petName") final String petName);
 }

@@ -105,6 +105,13 @@ public class PersonControllerImpl implements PersonController {
         return transformAndReturn(personsEntities);
     }
 
+    @Override
+    public ResponseEntity<List<Person>> findByPetName(final String petName) {
+        final List<PersonEntity> personsEntity = personRepository.findByPetName(petName);
+
+        return transformAndReturn(personsEntity);
+    }
+
     private ResponseEntity<List<Person>> transformAndReturn(final List<PersonEntity> personEntities) {
         if (personEntities.isEmpty()) {
             return ResponseEntity

@@ -4,6 +4,9 @@ import static io.swagger.v3.oas.annotations.enums.ParameterIn.PATH;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.querydsl.binding.QuerydslPredicate;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.demo.ms.search.person.entities.PersonEntity;
 import com.demo.ms.search.person.model.Person;
 import com.demo.ms.search.person.repository.specification.PersonAnnotatedSpecification;
+import com.querydsl.core.types.Predicate;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -94,4 +99,16 @@ public interface PersonController {
     @ResponseStatus(value = HttpStatus.OK)
     @GetMapping(value = "/searchByPersonDataAnnotated", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<List<Person>> searchByPersonDataAnnotated(PersonAnnotatedSpecification personEntitySpecification);
+
+    @Operation(summary = "Search a person using QueryDSL", tags = { "Person" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Person found."),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "404", description = "Person not found")
+    })
+    @ResponseStatus(value = HttpStatus.OK)
+    @GetMapping(value = "/findAllByWebQuerydsl", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<List<Person>> findAllByWebQuerydsl(
+            @QuerydslPredicate(root = PersonEntity.class) final Predicate predicate,
+            @PageableDefault(size = 2, sort = "id") final Pageable pageable);
 }

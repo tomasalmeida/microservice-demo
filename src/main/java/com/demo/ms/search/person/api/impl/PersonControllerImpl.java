@@ -1,11 +1,13 @@
 package com.demo.ms.search.person.api.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,7 @@ import com.demo.ms.search.person.model.Person;
 import com.demo.ms.search.person.repository.specification.PersonAnnotatedSpecification;
 import com.demo.ms.search.person.repository.PersonRepository;
 import com.demo.ms.search.person.repository.specification.PersonSpecification;
+import com.querydsl.core.types.Predicate;
 
 @RestController
 public class PersonControllerImpl implements PersonController {
@@ -91,6 +94,15 @@ public class PersonControllerImpl implements PersonController {
         final List<PersonEntity> personsEntity = personRepository.findAll(personEntitySpecification);
 
         return transformAndReturn(personsEntity);
+    }
+
+    @Override
+    public ResponseEntity<List<Person>> findAllByWebQuerydsl(final Predicate predicate, final Pageable pageable) {
+        final Iterable<PersonEntity> personsEntitiesIt = personRepository.findAll(predicate, pageable);
+
+        final List<PersonEntity> personsEntities = new ArrayList<>();
+        personsEntitiesIt.forEach(personsEntities::add);
+        return transformAndReturn(personsEntities);
     }
 
     private ResponseEntity<List<Person>> transformAndReturn(final List<PersonEntity> personEntities) {
